@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
-
 import { cn } from "@/lib/utils";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -26,11 +25,9 @@ const ChartContext = React.createContext<ChartContextProps | null>(null);
 
 function useChart() {
   const context = React.useContext(ChartContext);
-
   if (!context) {
     throw new Error("useChart must be used within a <ChartContainer />");
   }
-
   return context;
 }
 
@@ -74,9 +71,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     ([, config]) => config.theme || config.color
   );
 
-  if (!colorConfig.length) {
-    return null;
-  }
+  if (!colorConfig.length) return null;
 
   return (
     <style
@@ -102,6 +97,41 @@ ${colorConfig
   );
 };
 
+// ✅ FIX: definimos tipo para el tooltip payload
+type TooltipPayloadItem = {
+  color?: string;
+  name?: string;
+  dataKey?: string;
+  type?: string;
+  value?: number;
+  payload?: Record<string, any>;
+};
+
+type ChartTooltipContentProps = React.ComponentProps<"div"> & {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string;
+  indicator?: "line" | "dot" | "dashed";
+  hideLabel?: boolean;
+  hideIndicator?: boolean;
+  labelFormatter?: (
+    label: any,
+    payload?: TooltipPayloadItem[]
+  ) => React.ReactNode;
+  formatter?: (
+    value: any,
+    name: string,
+    item: TooltipPayloadItem,
+    index: number,
+    raw: any
+  ) => React.ReactNode;
+  className?: string;
+  color?: string;
+  nameKey?: string;
+  labelKey?: string;
+  labelClassName?: string;
+};
+
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
 function ChartTooltipContent({
@@ -118,21 +148,11 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<"div"> & {
-    hideLabel?: boolean;
-    hideIndicator?: boolean;
-    indicator?: "line" | "dot" | "dashed";
-    nameKey?: string;
-    labelKey?: string;
-  }) {
+}: ChartTooltipContentProps) {
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
-    if (hideLabel || !payload?.length) {
-      return null;
-    }
-
+    if (hideLabel || !payload?.length) return null;
     const [item] = payload;
     const key = `${labelKey || item?.dataKey || item?.name || "value"}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -149,10 +169,7 @@ function ChartTooltipContent({
       );
     }
 
-    if (!value) {
-      return null;
-    }
-
+    if (!value) return null;
     return <div className={cn("font-medium", labelClassName)}>{value}</div>;
   }, [
     label,
@@ -164,9 +181,7 @@ function ChartTooltipContent({
     labelKey,
   ]);
 
-  if (!active || !payload?.length) {
-    return null;
-  }
+  if (!active || !payload?.length) return null;
 
   const nestLabel = payload.length === 1 && indicator !== "dot";
 
@@ -184,7 +199,7 @@ function ChartTooltipContent({
           .map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
-            const indicatorColor = color || item.payload.fill || item.color;
+            const indicatorColor = color || item.payload?.fill || item.color;
 
             return (
               <div
@@ -265,9 +280,7 @@ function ChartLegendContent({
   }) {
   const { config } = useChart();
 
-  if (!payload?.length) {
-    return null;
-  }
+  if (!payload?.length) return null;
 
   return (
     <div
@@ -308,15 +321,12 @@ function ChartLegendContent({
   );
 }
 
-// Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: unknown,
+  payload: any,
   key: string
 ) {
-  if (typeof payload !== "object" || payload === null) {
-    return undefined;
-  }
+  if (typeof payload !== "object" || payload === null) return undefined;
 
   const payloadPayload =
     "payload" in payload &&
@@ -327,19 +337,14 @@ function getPayloadConfigFromPayload(
 
   let configLabelKey: string = key;
 
-  if (
-    key in payload &&
-    typeof payload[key as keyof typeof payload] === "string"
-  ) {
-    configLabelKey = payload[key as keyof typeof payload] as string;
+  if (key in payload && typeof payload[key] === "string") {
+    configLabelKey = payload[key];
   } else if (
     payloadPayload &&
     key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
+    typeof payloadPayload[key] === "string"
   ) {
-    configLabelKey = payloadPayload[
-      key as keyof typeof payloadPayload
-    ] as string;
+    configLabelKey = payloadPayload[key];
   }
 
   return configLabelKey in config
