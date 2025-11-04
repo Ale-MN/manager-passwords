@@ -57,7 +57,7 @@ export function FormEditElement(props: FormEditElementProps) {
 
       router.push("/");
     } catch (error) {
-      toast("Algo ocurrio mal");
+      toast(`Algo ocurrio mal ${error}`);
     }
   };
 

@@ -67,7 +67,7 @@ export function FormAddElement(props: FormAddElementProps) {
       closeDialog();
       router.refresh();
     } catch (error) {
-      toast("Algo ocurrio mal");
+      toast(`Algo ocurrio mal ${error}`);
     }
   };
 
