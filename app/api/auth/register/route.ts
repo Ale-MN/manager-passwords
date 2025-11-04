@@ -20,6 +20,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(user);
   } catch (error) {
-    return new NextResponse("internal error", { status: 500 });
+    return new NextResponse("internal error" + error, { status: 500 });
   }
 }

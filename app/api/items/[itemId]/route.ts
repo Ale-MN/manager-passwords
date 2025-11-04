@@ -10,8 +10,9 @@ export async function PATCH(
     const values = await req.json();
 
     if (!itemId) {
-      return new NextResponse("Unaithorized ", { status: 401 });
+      return new NextResponse(`Item ${itemId} actualizado`);
     }
+
     const element = await db.element.update({
       where: {
         id: itemId,
@@ -20,9 +21,10 @@ export async function PATCH(
         ...values,
       },
     });
+
     return NextResponse.json(element);
   } catch (error) {
     console.log(error);
-    return new NextResponse("Internal Error ", { status: 500 });
+    return new NextResponse("Internal Error" + error, { status: 500 });
   }
 }
