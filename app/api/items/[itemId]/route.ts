@@ -3,28 +3,24 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
-    const { itemId } = params;
+    const { itemId } = await params; // 👈 importante
     const values = await req.json();
 
     if (!itemId) {
-      return new NextResponse(`Item ${itemId} actualizado`);
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const element = await db.element.update({
-      where: {
-        id: itemId,
-      },
-      data: {
-        ...values,
-      },
+      where: { id: itemId },
+      data: { ...values },
     });
 
     return NextResponse.json(element);
-  } catch (error) {
-    console.log(error);
-    return new NextResponse("Internal Error" + error, { status: 500 });
+  } catch (e) {
+    console.error("PATCH error:", e);
+    return new NextResponse("Internal Error " + e, { status: 500 });
   }
 }
