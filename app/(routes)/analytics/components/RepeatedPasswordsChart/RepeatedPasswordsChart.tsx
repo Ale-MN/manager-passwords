@@ -13,11 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { ChartConfig } from "@/components/ui/chart-container";
 
 export default function RepeatedPasswordsChart(
   props: RepeatedPasswordsChartProps
