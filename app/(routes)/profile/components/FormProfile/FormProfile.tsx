@@ -47,7 +47,7 @@ export default function FormProfile(props: FormProfileProps) {
       await axios.patch("/api/profile", values);
       toast("Profile updated");
     } catch (error) {
-      toast("Algo ocurrió mal");
+      toast("Algo ocurrió mal" + error);
     }
 
     router.refresh();

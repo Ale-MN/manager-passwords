@@ -1,4 +1,4 @@
-import { Folder, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { DataHeaderMainItemsProps } from "./HeaderMain.types";
 
 export const dataHeaderMain: DataHeaderMainItemsProps[] = [

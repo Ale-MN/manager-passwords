@@ -6,18 +6,18 @@ import { redirect } from "next/navigation";
 export default async function ElementPage({
   params,
 }: {
-  params: { elementId: string };
+  params: Promise<{ elementId: string }>;
 }) {
+  const { elementId } = await params;
+
   const session = await getServerSession();
 
   if (!session || !session?.user?.email) {
-    return redirect("/");
+    redirect("/");
   }
 
   const element = await db.element.findUnique({
-    where: {
-      id: params.elementId,
-    },
+    where: { id: elementId },
   });
 
   if (!element) {
