@@ -19,6 +19,6 @@
     "display": "standalone",
     "dir": "auto",
     "lang": "es-ES",
-    "name": "managerPasswords",
+    "name": "manejador-passwords",
     "short_name": "managpass"
 }
